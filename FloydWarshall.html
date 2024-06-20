@@ -1,0 +1,218 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Floyd-Warshall Algorithm</title>
+    <style>
+        body {
+            background-color: #E8DFCA;
+            margin: 0;
+            font-size: 16px;
+            font-family: monospace;
+            color: #4F6F52;
+        }
+
+        header {
+            background-color: #4F6F52;
+            padding: 40px;
+            font-size: 28px;
+            text-align: center;
+            color: white;
+        }
+
+        .left {
+            margin: 20px;
+        }
+
+        .button {
+            border-radius: 7px;
+            height: 100%;
+            width: 150px;
+            padding: 6px;
+            font-size: 16px;
+            font-family: monospace;
+            border: 1px #4F6F52 ridge;
+            background-color: #F5EFE6;
+            transition-duration: 0.3s;
+            box-shadow: 0 6px 16px 0 rgba(0,0,0,0.2), 0 6px 10px 0 rgba(0,0,0,0.19);
+            margin: 10px;
+        }
+
+        .button:hover {
+            background-color: #4F6F52;
+            color: white;
+        }
+
+        .circle {
+            border-radius: 50%;
+            background-color: #F5EFE6;
+            height: 30px;
+            width: 30px;
+            display: inline-block;
+            border: 1px #4F6F52 groove;
+            box-shadow: 0 6px 16px 0 rgba(0,0,0,0.2), 0 6px 10px 0 rgba(0,0,0,0.19);
+            text-align: center;
+            line-height: 30px;
+            font-size: 16px;
+            font-weight: bold;
+            margin: 10px;
+        }
+
+        .edge {
+            background-color: #F5EFE6;
+            height: 3px;
+            width: 40px;
+            display: inline-block;
+            border: 1px #4F6F52 groove;
+            box-shadow: 0 6px 16px 0 rgba(0,0,0,0.2), 0 6px 10px 0 rgba(0,0,0,0.19);
+            margin-right: 10px;
+        }
+
+        #resultMatrix {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        Floyd-Warshall Algorithm
+    </header>
+    <div class="left">
+        <button class="button" onclick="addVertex()">Add Vertex</button>
+        <div id="circlesContainer"></div>
+    </div>
+    <div class="left">
+        <button class="button" onclick="addEdge()">Add Edge</button>
+        <select id="fromVertex" class="button">
+            <option value="choose" selected>From Vertex</option>
+        </select>
+        <select id="toVertex" class="button">
+            <option value="choose" selected>To Vertex</option>
+        </select>
+        <input type="number" id="weight" class="button" placeholder="Weight">
+        <div class="left" id="edgesContainer"></div>
+    </div>
+    <div class="left">
+        <button class="button" onclick="floydWarshall()">Calculate Shortest Paths</button>
+        <input type="radio" id="Directed" name="directedOrNot" value="Directed">
+        <label for="Directed"> Directed Graph </label>
+        <input type="radio" id="InDirected" name="directedOrNot" value="InDirected">
+        <label for="InDirected"> Indirected Graph </label>
+        <div id="resultMatrix" class="left"></div>
+        <button class="button" onclick="location.reload()">New Graph</button>
+    </div>
+
+    <script>
+        let Vertices = [];
+        let Edges = [];
+        let graph = [];
+
+        function addVertex() {
+            if (Vertices.length < 26) {
+                let letter = String.fromCharCode(65 + Vertices.length); // A, B, C, ...
+                Vertices.push(letter);
+
+                let circle = document.createElement('div');
+                circle.className = 'circle';
+                circle.textContent = letter;
+                document.getElementById('circlesContainer').appendChild(circle);
+
+                addOptionToSelect('fromVertex', letter);
+                addOptionToSelect('toVertex', letter);
+
+                updateGraphForNewVertex();
+            } else {
+                alert('Maximum number of vertices reached (26).');
+            }
+        }
+
+        function addOptionToSelect(selectId, letter) {
+            let select = document.getElementById(selectId);
+            let option = document.createElement('option');
+            option.value = letter;
+            option.textContent = letter;
+            select.appendChild(option);
+        }
+
+        function updateGraphForNewVertex() {
+            graph.push(new Array(Vertices.length).fill(null));
+            for (let i = 0; i < graph.length - 1; i++) {
+                graph[i].push(null);
+            }
+        }
+
+        function addEdge() {
+            let fromVertex = document.getElementById('fromVertex').value;
+            let toVertex = document.getElementById('toVertex').value;
+            let weight = parseFloat(document.getElementById('weight').value);
+
+            if (fromVertex === 'choose' || toVertex === 'choose' || isNaN(weight)) {
+                alert('Please select vertices and add a valid weight.');
+                return;
+            }
+
+            let fromIndex = Vertices.indexOf(fromVertex);
+            let toIndex = Vertices.indexOf(toVertex);
+            if (document.getElementById('Directed').checked) {
+                graph[fromIndex][toIndex] = weight;
+            }
+            else if (document.getElementById('InDirected').checked) {
+                graph[fromIndex][toIndex] = weight;
+                graph[toIndex][fromIndex] = weight;
+            }
+            else {
+                alert('You must choose graph type directed or indirected');
+                return
+            }
+            let edgeInfo = `Edge added: ${fromVertex} -> ${toVertex} (Weight: ${weight})`;
+            document.getElementById('edgesContainer').innerHTML += `<div>${edgeInfo}</div>`;
+        }
+
+        function floydWarshall() {
+            let dist = [];
+
+            for (let i = 0; i < graph.length; i++) {
+                dist[i] = [];
+                for (let j = 0; j < graph.length; j++) {
+                    if (i === j) {
+                        dist[i][j] = 0;
+                    } else if (graph[i][j] === null) {
+                        dist[i][j] = Infinity;
+                    } else {
+                        dist[i][j] = graph[i][j];
+                    }
+                }
+            }
+
+            document.getElementById('resultMatrix').innerHTML = '<strong>Initial Distance Matrix (D^0)</strong><br>' + displayMatrix(dist);
+
+            for (let k = 0; k < graph.length; k++) {
+                for (let i = 0; i < graph.length; i++) {
+                    for (let j = 0; j < graph.length; j++) {
+                        if (dist[i][k] !== Infinity && dist[k][j] !== Infinity && dist[i][j] > dist[i][k] + dist[k][j]) {
+                            dist[i][j] = dist[i][k] + dist[k][j];
+                        }
+                    }
+                }
+            }
+
+            document.getElementById('resultMatrix').innerHTML += '<br><br><strong>Shortest Distance Matrix (Final)</strong><br>' + displayMatrix(dist);
+        }
+
+        function displayMatrix(matrix) {
+            let html = '<table border="1">';
+            for (let row of matrix) {
+                html += '<tr>';
+                for (let cell of row) {
+                    html += `<td>  ${cell === Infinity ? '∞' : cell}  </td>`;
+                }
+                html += '</tr>';
+            }
+            html += '</table>';
+            return html;
+        }
+    </script>
+</body>
+</html>
+
