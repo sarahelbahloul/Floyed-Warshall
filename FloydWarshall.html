@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -7,32 +7,40 @@
     <link rel="stylesheet" href="Floyed.css">
 </head>
 <body>
-    <header>
+    <header id="myHeader">
         Floyd-Warshall Algorithm
     </header>
     <div class="left">
-        <button class="button" onclick="addVertex()">Add Vertex</button>
+        <button class="button" id="addvertex" onclick="addVertex()">Add Vertex</button>
+        
         <div id="circlesContainer"></div>
-    </div>
-    <div class="left">
-        <button class="button" onclick="addEdge()">Add Edge</button>
+
+        <button class="button" id="addedge" onclick="addEdge()">Add Edge</button>
+        
         <select id="fromVertex" class="button">
             <option value="choose" selected>From Vertex</option>
         </select>
+        
         <select id="toVertex" class="button">
             <option value="choose" selected>To Vertex</option>
         </select>
+        
         <input type="number" id="weight" class="button" placeholder="Weight">
+        
+        
         <div class="left" id="edgesContainer"></div>
-    </div>
-    <div class="left">
-        <button class="button" onclick="floydWarshall()">Calculate Shortest Paths</button>
-        <input type="radio" id="Directed" name="directedOrNot" value="Directed">
+        
+        <button class="button" id="calculate" onclick="floydWarshall()">Calculate Shortest Paths</button>
+        
+        <input type="radio" id="Directed" name="directedOrNot" value="Directed" >
         <label for="Directed"> Directed Graph </label>
-        <input type="radio" id="InDirected" name="directedOrNot" value="InDirected">
+        
+        <input type="radio" id="InDirected" name="directedOrNot" value="InDirected" >
         <label for="InDirected"> Indirected Graph </label>
+        
         <div id="resultMatrix" class="left"></div>
-        <button class="button" onclick="location.reload()">New Graph</button>
+        
+        <button class="button" id="newgraph" onclick="location.reload()">New Graph</button>
     </div>
     <script src="FloyedScript.js"></script>
 </body>
